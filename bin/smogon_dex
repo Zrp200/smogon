@@ -1,0 +1,65 @@
+#!/usr/bin/env ruby
+require "launchy"
+require "smogon_dex"
+include SmogonDex
+$gen, $catagory, $format = nil
+
+ARGV.each do |given|
+	done = false
+	if given =~ /\A\-\-/
+		arg = given.gsub /\A\-\-/, ""
+		if arg == "home"
+			homepage
+			exit
+		end
+		Generations.each do |generation|
+			if arg == generation and $gen.nil?
+				$gen, done = generation, true
+				break
+			end
+		end
+		Catagories.each do |catagory|
+			if arg == catagory and ($catagory.nil? or $catagory == "")
+				$catagory = catagory
+				break
+			end
+		end unless done
+	elsif given =~ /\A\-/
+		arg = given.gsub(/\A\-/, "")
+		if $catagory.nil?
+			$catagory = case arg
+				when ?a then "abilities"
+				when ?m then "moves"
+				when ?p then "pokemon"
+				when ?i then "items"
+				when ?f then "formats"
+				when ?t then "types"
+				else nil
+			end
+			next unless $catagory.nil?
+		end
+		if $gen.nil?
+			$gen = case arg.to_i
+				when 1 then "rb"
+				when 2 then "gs"
+				when 3 then "rs"
+				when 4 then "dp"
+				when 5 then "bw"
+				when 6 then "xy"
+				else nil
+			end
+			next unless $gen.nil?
+		end
+	elsif $query.nil?
+		$query = given
+	elsif $format.nil?
+		$format = given
+	else
+		warn "Unknown argument: #{given}"
+	end
+end
+search(generation: $gen, catagory: $catagory, query: $query, format: $format) 
+
+
+	
+	

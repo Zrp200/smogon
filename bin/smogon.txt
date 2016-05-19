@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+require "launchy"
+require "smogon"
+gen, search_catagory = nil
+
+ARGV.each do |arg|
+	if arg =~ /\-\-/
+		Smogon::Generations.each do |generation|
+			if arg =~ generation and gen.nil?
+				gen = generation
+				ARGV.delete! arg
+			end
+		end
+		Smogon::Catagories.each do |catagory|
+			if arg =~ catagory and search_catagory.nil?
+				search_catagory = catagory
+				ARGV.delete! arg
+			end
+		end
+	end
+end
+query = ARGV.shift unless ARGV.empty?
+Launchy.open Smogon::url(gen, search_catagory, query)
+
+
+	
+	
